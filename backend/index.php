@@ -1,5 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT");
+header("Access-Control-Allow-Headers: Content-Type");
 
 require './connect.php';
 
@@ -23,4 +25,3 @@ if (isset($routes[$request])) {
     }
     http_response_code(404);
 }
-http_response_code(404);

@@ -2180,7 +2180,7 @@ __webpack_require__.r(__webpack_exports__);
 const axiosInstance = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
   baseURL: 'http://localhost:8000',
   headers: {
-    'Content-type': 'application/json'
+    'Content-Type': 'application/json'
   }
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (axiosInstance);
@@ -2193,10 +2193,13 @@ const axiosInstance = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
   \******************************/
 /***/ (() => {
 
-const btnsAddToCart = document.querySelectorAll('#btn_add_to_cart');
-btnsAddToCart.forEach(btn => {
-  btn.addEventListener('click', event => {
-    console.log(btn.getAttribute('data-id'));
+const usersElement = document.querySelector('#users');
+usersElement.addEventListener('loaded', () => {
+  const btnsAddToCart = document.querySelectorAll('#btn_add_to_cart');
+  btnsAddToCart.forEach(btn => {
+    btn.addEventListener('click', event => {
+      console.log(btn.getAttribute('data-id'));
+    });
   });
 });
 
@@ -2212,11 +2215,14 @@ btnsAddToCart.forEach(btn => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _hide__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hide */ "./modules/hide.js");
 
-const btnsBackElement = document.querySelectorAll('#btn_back');
-btnsBackElement.forEach(btn => {
-  btn.addEventListener('click', function (event) {
-    const id = btn.getAttribute('data-id');
-    (0,_hide__WEBPACK_IMPORTED_MODULE_0__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id);
+const usersElement = document.querySelector('#users');
+usersElement.addEventListener('loaded', () => {
+  const btnsBackElement = document.querySelectorAll('#btn_back');
+  btnsBackElement.forEach(btn => {
+    btn.addEventListener('click', function (event) {
+      const id = btn.getAttribute('data-id');
+      (0,_hide__WEBPACK_IMPORTED_MODULE_0__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id);
+    });
   });
 });
 
@@ -2232,11 +2238,14 @@ btnsBackElement.forEach(btn => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _hide__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hide */ "./modules/hide.js");
 
-const btnsEditElement = document.querySelectorAll('#btn_edit_element');
-btnsEditElement.forEach(btn => {
-  btn.addEventListener('click', function (event) {
-    const id = btn.getAttribute('data-id');
-    (0,_hide__WEBPACK_IMPORTED_MODULE_0__["default"])("#listLi" + id, "#editLi" + id);
+const usersElement = document.querySelector('#users');
+usersElement.addEventListener('loaded', () => {
+  const btnsEditElement = document.querySelectorAll('#btn_edit_element');
+  btnsEditElement.forEach(btn => {
+    btn.addEventListener('click', function (event) {
+      const id = btn.getAttribute('data-id');
+      (0,_hide__WEBPACK_IMPORTED_MODULE_0__["default"])("#listLi" + id, "#editLi" + id);
+    });
   });
 });
 
@@ -2294,6 +2303,7 @@ async function render() {
                     <button id="btn_edit_element" data-id="${user.id}">Edit</button>
                 </li>
 
+                <span id="message${user.id}"></span>
                 <li id="editLi${user.id}" style="display:none;">
                     <input id="input${user.id}" value="${user.firstName}" />
                     <button id="btn_back" data-id="${user.id}">Back</button>
@@ -2302,7 +2312,9 @@ async function render() {
             `;
     });
     usersHTML += '</ul>';
+    const event = new CustomEvent('loaded');
     usersElement.innerHTML = usersHTML;
+    usersElement.dispatchEvent(event);
   } catch (error) {
     console.log(error);
   }
@@ -2318,10 +2330,13 @@ render();
   \***************************/
 /***/ (() => {
 
-const btnsRemoveElement = document.querySelectorAll('#btn_remove_element');
-btnsRemoveElement.forEach(btn => {
-  btn.addEventListener('click', function (event) {
-    this.closest('li').remove();
+const usersElement = document.querySelector('#users');
+usersElement.addEventListener('loaded', () => {
+  const btnsRemoveElement = document.querySelectorAll('#btn_remove_element');
+  btnsRemoveElement.forEach(btn => {
+    btn.addEventListener('click', function (event) {
+      this.closest('li').remove();
+    });
   });
 });
 
@@ -2331,13 +2346,43 @@ btnsRemoveElement.forEach(btn => {
 /*!*************************!*\
   !*** ./modules/save.js ***!
   \*************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-const btnsSaveElement = document.querySelectorAll('#btn_save');
-btnsSaveElement.forEach(btn => {
-  btn.addEventListener('click', function (event) {
-    const id = btn.getAttribute('data-id');
-    console.log('save');
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../http */ "./http.js");
+/* harmony import */ var _hide__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hide */ "./modules/hide.js");
+
+
+const usersElement = document.querySelector('#users');
+usersElement.addEventListener('loaded', () => {
+  const btnsSaveElement = document.querySelectorAll('#btn_save');
+  btnsSaveElement.forEach(btn => {
+    btn.addEventListener('click', async function (event) {
+      try {
+        const id = btn.getAttribute('data-id');
+        const inputName = document.querySelector("#input" + id);
+        const messageUpdated = document.querySelector("#message" + id);
+        const {
+          data
+        } = await _http__WEBPACK_IMPORTED_MODULE_0__["default"].post('/user/update', {
+          id,
+          firstName: inputName.value
+        });
+
+        if (data === 'updated') {
+          messageUpdated.textContent = 'Atualizado com sucesso';
+          (0,_hide__WEBPACK_IMPORTED_MODULE_1__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id);
+          setTimeout(() => {
+            messageUpdated.textContent = '';
+          }, 3000);
+        }
+
+        console.log(data);
+      } catch (error) {
+        console.log(error);
+      }
+    });
   });
 });
 
@@ -2363,7 +2408,7 @@ async function getUsers() {
     } = await _http__WEBPACK_IMPORTED_MODULE_0__["default"].get('/list');
     return data;
   } catch (error) {
-    console.log(error);
+    throw new Error(error); // console.log(error);
   }
 }
 
@@ -2453,7 +2498,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_edit__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/edit */ "./modules/edit.js");
 /* harmony import */ var _modules_back__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/back */ "./modules/back.js");
 /* harmony import */ var _modules_save__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/save */ "./modules/save.js");
-/* harmony import */ var _modules_save__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_modules_save__WEBPACK_IMPORTED_MODULE_5__);
 
 
 

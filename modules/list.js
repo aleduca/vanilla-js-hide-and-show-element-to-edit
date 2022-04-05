@@ -4,7 +4,7 @@ const usersElement = document.querySelector('#users');
 
 async function render(){
     try{    
-        let usersHTML = '<ul>';
+    let usersHTML = '<ul>';
         const users = await getUsers();
         users.forEach((user, index) => {
             usersHTML+= `
@@ -15,6 +15,7 @@ async function render(){
                     <button id="btn_edit_element" data-id="${user.id}">Edit</button>
                 </li>
 
+                <span id="message${user.id}"></span>
                 <li id="editLi${user.id}" style="display:none;">
                     <input id="input${user.id}" value="${user.firstName}" />
                     <button id="btn_back" data-id="${user.id}">Back</button>
@@ -24,7 +25,9 @@ async function render(){
         })
         usersHTML+= '</ul>';
 
+        const event = new CustomEvent('loaded');
         usersElement.innerHTML = usersHTML;
+        usersElement.dispatchEvent(event);
     }catch(error){
         console.log(error);
     }

@@ -1,8 +1,12 @@
 
-const btnsRemoveElement = document.querySelectorAll('#btn_remove_element');
+const usersElement = document.querySelector('#users');
 
-btnsRemoveElement.forEach((btn) => {
+usersElement.addEventListener('loaded', () => {
+    const btnsRemoveElement = document.querySelectorAll('#btn_remove_element');
+    btnsRemoveElement.forEach((btn) => {
     btn.addEventListener('click', function(event) {  
         this.closest('li').remove();
     })
 })
+
+});
