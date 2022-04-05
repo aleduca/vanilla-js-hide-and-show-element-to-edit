@@ -12,7 +12,7 @@ usersElement.addEventListener('loaded', () => {
                 const inputName = document.querySelector("#input"+id);
                 const messageUpdated = document.querySelector("#message"+id);
 
-                const {data} = await http.post('/user/update',{
+                const {data} = await http.put('/user/update',{
                     id,
                     firstName:inputName.value
                 });

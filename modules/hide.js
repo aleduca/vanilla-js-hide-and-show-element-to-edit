@@ -3,9 +3,9 @@ export default function hideAndShowLiElement(toHideElement, toShowElement, name,
     const toHide = document.querySelector(toHideElement);
     const toShow = document.querySelector(toShowElement);
     const inputEditValue = document.querySelector(input);
-    const nameItem = document.querySelector(name);
+    const nameItem = document.querySelector(name);    
 
-    if(inputEditValue){        
+    if(inputEditValue && inputEditValue.value.length > 0){        
         nameItem.innerHTML = inputEditValue.value;
     }
 

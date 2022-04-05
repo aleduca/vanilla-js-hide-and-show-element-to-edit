@@ -2268,7 +2268,7 @@ function hideAndShowLiElement(toHideElement, toShowElement, name, input) {
   const inputEditValue = document.querySelector(input);
   const nameItem = document.querySelector(name);
 
-  if (inputEditValue) {
+  if (inputEditValue && inputEditValue.value.length > 0) {
     nameItem.innerHTML = inputEditValue.value;
   }
 
@@ -2296,18 +2296,18 @@ async function render() {
     const users = await (0,_users__WEBPACK_IMPORTED_MODULE_0__["default"])();
     users.forEach((user, index) => {
       usersHTML += `
+               
+                <span id="message${user.id}"></span>
                 <li id="listLi${user.id}">
                     <span id="name${user.id}">${user.firstName}</span>
-                    <button id="btn_add_to_cart" data-id="${user.id}">Add to cart</button>
-                    <button id="btn_remove_element" data-id="${index}">Remove</button>
-                    <button id="btn_edit_element" data-id="${user.id}">Edit</button>
+                    <button class="btn btn-danger btn-sm" id="btn_remove_element" data-id="${user.id}"><i class="fa-solid fa-trash"></i> Remove</button>
+                    <button class="btn btn-success btn-sm" id="btn_edit_element" data-id="${user.id}"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                 </li>
 
-                <span id="message${user.id}"></span>
                 <li id="editLi${user.id}" style="display:none;">
                     <input id="input${user.id}" value="${user.firstName}" />
-                    <button id="btn_back" data-id="${user.id}">Back</button>
-                    <button id="btn_save" data-id="${user.id}">Save</button>
+                    <button class="btn btn-info btn-sm" id="btn_back" data-id="${user.id}"><i class="fa-solid fa-arrow-left-long"></i> Back</button>
+                    <button class="btn btn-success btn-sm" id="btn_save" data-id="${user.id}"><i class="fa-solid fa-check"></i> Save</button>
                 </li>
             `;
     });
@@ -2328,14 +2328,39 @@ render();
 /*!***************************!*\
   !*** ./modules/remove.js ***!
   \***************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../http */ "./http.js");
 
 const usersElement = document.querySelector('#users');
 usersElement.addEventListener('loaded', () => {
   const btnsRemoveElement = document.querySelectorAll('#btn_remove_element');
   btnsRemoveElement.forEach(btn => {
-    btn.addEventListener('click', function (event) {
-      this.closest('li').remove();
+    btn.addEventListener('click', async function (event) {
+      try {
+        const id = btn.getAttribute('data-id');
+        const messageUpdated = document.querySelector("#message" + id);
+        const {
+          data
+        } = await _http__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"]('/user/destroy', {
+          data: {
+            id
+          }
+        });
+        console.log(data);
+
+        if (data === 'deleted') {
+          messageUpdated.textContent = 'Deletado com sucesso';
+          setTimeout(() => {
+            messageUpdated.textContent = '';
+            this.closest('li').remove();
+          }, 3000);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     });
   });
 });
@@ -2365,7 +2390,7 @@ usersElement.addEventListener('loaded', () => {
         const messageUpdated = document.querySelector("#message" + id);
         const {
           data
-        } = await _http__WEBPACK_IMPORTED_MODULE_0__["default"].post('/user/update', {
+        } = await _http__WEBPACK_IMPORTED_MODULE_0__["default"].put('/user/update', {
           id,
           firstName: inputName.value
         });
@@ -2494,7 +2519,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_addToCart__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/addToCart */ "./modules/addToCart.js");
 /* harmony import */ var _modules_addToCart__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_modules_addToCart__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _modules_remove__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/remove */ "./modules/remove.js");
-/* harmony import */ var _modules_remove__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_modules_remove__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _modules_edit__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/edit */ "./modules/edit.js");
 /* harmony import */ var _modules_back__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/back */ "./modules/back.js");
 /* harmony import */ var _modules_save__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/save */ "./modules/save.js");

@@ -1,6 +1,6 @@
 <?php
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type");
 
 require './connect.php';
@@ -10,8 +10,12 @@ $routes = [
         '/list' => fn () => require('./list.php')
     ],
 
-    'POST' => [
+    'PUT' => [
         '/user/update' => fn () => require('./update.php')
+    ],
+
+    'DELETE' => [
+        '/user/destroy' => fn () => require('./delete.php')
     ]
 ];
 

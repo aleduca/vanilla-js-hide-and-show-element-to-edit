@@ -8,18 +8,18 @@ async function render(){
         const users = await getUsers();
         users.forEach((user, index) => {
             usersHTML+= `
+               
+                <span id="message${user.id}"></span>
                 <li id="listLi${user.id}">
                     <span id="name${user.id}">${user.firstName}</span>
-                    <button id="btn_add_to_cart" data-id="${user.id}">Add to cart</button>
-                    <button id="btn_remove_element" data-id="${index}">Remove</button>
-                    <button id="btn_edit_element" data-id="${user.id}">Edit</button>
+                    <button class="btn btn-danger btn-sm" id="btn_remove_element" data-id="${user.id}"><i class="fa-solid fa-trash"></i> Remove</button>
+                    <button class="btn btn-success btn-sm" id="btn_edit_element" data-id="${user.id}"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                 </li>
 
-                <span id="message${user.id}"></span>
                 <li id="editLi${user.id}" style="display:none;">
                     <input id="input${user.id}" value="${user.firstName}" />
-                    <button id="btn_back" data-id="${user.id}">Back</button>
-                    <button id="btn_save" data-id="${user.id}">Save</button>
+                    <button class="btn btn-info btn-sm" id="btn_back" data-id="${user.id}"><i class="fa-solid fa-arrow-left-long"></i> Back</button>
+                    <button class="btn btn-success btn-sm" id="btn_save" data-id="${user.id}"><i class="fa-solid fa-check"></i> Save</button>
                 </li>
             `
         })
