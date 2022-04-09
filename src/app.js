@@ -2221,7 +2221,39 @@ usersElement.addEventListener('loaded', () => {
   btnsBackElement.forEach(btn => {
     btn.addEventListener('click', function (event) {
       const id = btn.getAttribute('data-id');
-      (0,_hide__WEBPACK_IMPORTED_MODULE_0__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id);
+      const isBack = true;
+      (0,_hide__WEBPACK_IMPORTED_MODULE_0__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id, isBack);
+    });
+  });
+});
+
+/***/ }),
+
+/***/ "./modules/cancel.js":
+/*!***************************!*\
+  !*** ./modules/cancel.js ***!
+  \***************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _hide__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./hide */ "./modules/hide.js");
+/* harmony import */ var _intervals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./intervals */ "./modules/intervals.js");
+
+
+const usersElement = document.querySelector('#users');
+usersElement.addEventListener('loaded', () => {
+  const btnsCancelElement = document.querySelectorAll('#btn_cancel');
+  btnsCancelElement.forEach(btn => {
+    btn.addEventListener('click', function (event) {
+      const id = btn.getAttribute('data-id');
+      const counter = document.querySelector("#counter" + id);
+      const btn_cancel = document.querySelector("#cancel" + id);
+      (0,_intervals__WEBPACK_IMPORTED_MODULE_1__.removeInterval)(id);
+      btn_cancel.style.display = 'none';
+      counter.textContent = '';
+      const isBack = true;
+      (0,_hide__WEBPACK_IMPORTED_MODULE_0__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id, isBack);
     });
   });
 });
@@ -2262,11 +2294,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ hideAndShowLiElement)
 /* harmony export */ });
-function hideAndShowLiElement(toHideElement, toShowElement, name, input) {
+function hideAndShowLiElement(toHideElement, toShowElement, name, input, isBack = false) {
   const toHide = document.querySelector(toHideElement);
   const toShow = document.querySelector(toShowElement);
   const inputEditValue = document.querySelector(input);
   const nameItem = document.querySelector(name);
+
+  if (isBack) {
+    toHide.style.display = 'none';
+    toShow.style.display = 'block';
+    inputEditValue.value = nameItem.textContent;
+    return;
+  }
 
   if (inputEditValue && inputEditValue.value.length > 0) {
     nameItem.innerHTML = inputEditValue.value;
@@ -2274,6 +2313,40 @@ function hideAndShowLiElement(toHideElement, toShowElement, name, input) {
 
   toHide.style.display = 'none';
   toShow.style.display = 'block';
+}
+
+/***/ }),
+
+/***/ "./modules/intervals.js":
+/*!******************************!*\
+  !*** ./modules/intervals.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "addInterval": () => (/* binding */ addInterval),
+/* harmony export */   "removeInterval": () => (/* binding */ removeInterval)
+/* harmony export */ });
+let intervals = [];
+function addInterval(index, interval) {
+  intervals.push({
+    [index]: interval
+  });
+  console.log(intervals);
+}
+function removeInterval(index) {
+  const key = intervals.findIndex(inter => {
+    return inter[index];
+  });
+
+  if (intervals[key]) {
+    clearInterval(intervals[key][index]);
+    intervals.splice(key, 1);
+  }
+
+  console.log('fim => ', intervals);
 }
 
 /***/ }),
@@ -2296,7 +2369,8 @@ async function render() {
     const users = await (0,_users__WEBPACK_IMPORTED_MODULE_0__["default"])();
     users.forEach((user, index) => {
       usersHTML += `
-               
+
+                <span id="counter${user.id}"></span>
                 <span id="message${user.id}"></span>
                 <li id="listLi${user.id}">
                     <span id="name${user.id}">${user.firstName}</span>
@@ -2308,6 +2382,7 @@ async function render() {
                     <input id="input${user.id}" value="${user.firstName}" />
                     <button class="btn btn-info btn-sm" id="btn_back" data-id="${user.id}"><i class="fa-solid fa-arrow-left-long"></i> Back</button>
                     <button class="btn btn-success btn-sm" id="btn_save" data-id="${user.id}"><i class="fa-solid fa-check"></i> Save</button>
+                    <span style="display:none;" id="cancel${user.id}"><button class="btn btn-danger btn-sm" id="btn_cancel" data-id="${user.id}"><i class="fa-solid fa-check"></i> Cancel</button></span>
                 </li>
             `;
     });
@@ -2377,6 +2452,8 @@ usersElement.addEventListener('loaded', () => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../http */ "./http.js");
 /* harmony import */ var _hide__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./hide */ "./modules/hide.js");
+/* harmony import */ var _intervals__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./intervals */ "./modules/intervals.js");
+
 
 
 const usersElement = document.querySelector('#users');
@@ -2386,30 +2463,48 @@ usersElement.addEventListener('loaded', () => {
     btn.addEventListener('click', async function (event) {
       try {
         const id = btn.getAttribute('data-id');
-        const inputName = document.querySelector("#input" + id);
-        const messageUpdated = document.querySelector("#message" + id);
-        const {
-          data
-        } = await _http__WEBPACK_IMPORTED_MODULE_0__["default"].put('/user/update', {
-          id,
-          firstName: inputName.value
-        });
+        const counter = document.querySelector("#counter" + id);
+        const btn_cancel = document.querySelector("#cancel" + id);
+        btn_cancel.style.display = 'block';
+        let count = 3;
+        counter.textContent = `Você tem ${count} segundos para cancelar essa ação`;
+        const interval = setInterval(() => {
+          counter.textContent = `Você tem ${count -= 1} segundos para cancelar essa ação`;
 
-        if (data === 'updated') {
-          messageUpdated.textContent = 'Atualizado com sucesso';
-          (0,_hide__WEBPACK_IMPORTED_MODULE_1__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id);
-          setTimeout(() => {
-            messageUpdated.textContent = '';
-          }, 3000);
-        }
-
-        console.log(data);
+          if (count === 0) {
+            (0,_intervals__WEBPACK_IMPORTED_MODULE_2__.removeInterval)(id);
+            save(id, counter);
+          }
+        }, 1000);
+        (0,_intervals__WEBPACK_IMPORTED_MODULE_2__.addInterval)(id, interval); // console.log(data);
       } catch (error) {
         console.log(error);
       }
     });
   });
 });
+
+async function save(id, counter) {
+  const messageUpdated = document.querySelector("#message" + id);
+  const inputName = document.querySelector("#input" + id);
+  const {
+    data
+  } = await _http__WEBPACK_IMPORTED_MODULE_0__["default"].put('/user/update', {
+    id,
+    firstName: inputName.value
+  });
+
+  if (data === 'updated') {
+    messageUpdated.textContent = 'Atualizado com sucesso';
+    (0,_hide__WEBPACK_IMPORTED_MODULE_1__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id);
+    counter.textContent = '';
+    setTimeout(() => {
+      messageUpdated.textContent = '';
+      const isBack = true;
+      (0,_hide__WEBPACK_IMPORTED_MODULE_1__["default"])("#editLi" + id, "#listLi" + id, "#name" + id, "#input" + id, isBack);
+    }, 3000);
+  }
+}
 
 /***/ }),
 
@@ -2522,6 +2617,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_edit__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/edit */ "./modules/edit.js");
 /* harmony import */ var _modules_back__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/back */ "./modules/back.js");
 /* harmony import */ var _modules_save__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/save */ "./modules/save.js");
+/* harmony import */ var _modules_cancel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/cancel */ "./modules/cancel.js");
+
 
 
 

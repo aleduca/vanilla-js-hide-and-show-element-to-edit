@@ -8,7 +8,8 @@ usersElement.addEventListener('loaded', () => {
     btnsBackElement.forEach((btn) => {
         btn.addEventListener('click', function(event) {  
             const id = btn.getAttribute('data-id');
-            hideAndShowLiElement("#editLi"+id,"#listLi"+id,"#name"+id,"#input"+id);
+            const isBack = true;
+            hideAndShowLiElement("#editLi"+id,"#listLi"+id,"#name"+id,"#input"+id, isBack);
         })
     })
 })

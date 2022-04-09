@@ -8,7 +8,8 @@ async function render(){
         const users = await getUsers();
         users.forEach((user, index) => {
             usersHTML+= `
-               
+
+                <span id="counter${user.id}"></span>
                 <span id="message${user.id}"></span>
                 <li id="listLi${user.id}">
                     <span id="name${user.id}">${user.firstName}</span>
@@ -20,6 +21,7 @@ async function render(){
                     <input id="input${user.id}" value="${user.firstName}" />
                     <button class="btn btn-info btn-sm" id="btn_back" data-id="${user.id}"><i class="fa-solid fa-arrow-left-long"></i> Back</button>
                     <button class="btn btn-success btn-sm" id="btn_save" data-id="${user.id}"><i class="fa-solid fa-check"></i> Save</button>
+                    <span style="display:none;" id="cancel${user.id}"><button class="btn btn-danger btn-sm" id="btn_cancel" data-id="${user.id}"><i class="fa-solid fa-check"></i> Cancel</button></span>
                 </li>
             `
         })
